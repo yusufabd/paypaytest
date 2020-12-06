@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">PayPayTest</string>
+
+    <string name="error_slow_or_no_internet_connection">Slow or no internet connection</string>
+    <string name="error_something_went_wrong">Something went wrong</string>
+    <string name="try_again">Try again</string>
 </resources>
