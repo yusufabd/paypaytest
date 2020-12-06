@@ -4,6 +4,7 @@ import androidx.lifecycle.*
 import kotlinx.coroutines.*
 import me.stayplus.paypaytest.BuildConfig
 import me.stayplus.paypaytest.domain.entities.Currency
+import me.stayplus.paypaytest.domain.entities.Quote
 import me.stayplus.paypaytest.domain.interactor.MainInteractor
 import me.stayplus.paypaytest.extensions.isInternetError
 import me.stayplus.paypaytest.presentation.utils.ResourceManager
@@ -37,9 +38,13 @@ class MainViewModel(
     fun getCurrencyQuotes() {
         _showProgress.value = true
         (uiScope + getCurrencyQuotesErrorHandler).launch {
-            val list = interactor.getCurrencyQuotes()
-            _currencyList.value = list
+            val currencies = async { interactor.getCurrencyList() }
+            val quotes = async { interactor.getQuotes() }
+            val data = awaitAll(currencies, quotes)
+            _currencyList.value = data.first() as List<Currency>
             _showProgress.value = false
+
+            println("MyLogTag ${data[1] as List<Quote>}")
         }
     }
 
