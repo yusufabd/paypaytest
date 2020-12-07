@@ -8,6 +8,6 @@ import org.koin.dsl.module
 
 val screenModule = module {
     factory { MainRepository(get(), get()) }
-    single { MainInteractor(get()) }
+    single { MainInteractor(get(), get()) }
     viewModel { MainViewModel(get(), get()) }
 }

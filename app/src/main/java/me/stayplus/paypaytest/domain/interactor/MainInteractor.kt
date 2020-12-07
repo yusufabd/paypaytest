@@ -28,6 +28,10 @@ class MainInteractor(
         return currentTimeInMillis > lastUpdateTimeInMillis + cacheTimeMillis
     }
 
+    fun calculateQuote(amount: Double, currency: Currency) {
+
+    }
+
     companion object {
         private const val cacheTimeMillis: Long = 30 * 60 * 1000
     }

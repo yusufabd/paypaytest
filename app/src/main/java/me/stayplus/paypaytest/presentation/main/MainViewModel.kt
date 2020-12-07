@@ -17,6 +17,8 @@ class MainViewModel(
 
     val currencyList: LiveData<List<Currency>>
         get() = _currencyList
+    val currentQuotes: LiveData<List<Quote>>
+        get() = _currentQuotes
     val showProgress: LiveData<Boolean>
         get() = _showProgress
     val getCurrencyQuotesError: LiveData<String>
@@ -25,9 +27,13 @@ class MainViewModel(
     private val _currencyList = MutableLiveData<List<Currency>>()
     private val _showProgress = MutableLiveData<Boolean>()
     private val _getCurrencyQuotesError = SingleEventLiveData<String>()
+    private val _quotes = MutableLiveData<List<Quote>>()
+    private val _currentQuotes = MutableLiveData<List<Quote>>()
 
     private val job = SupervisorJob()
     private val uiScope = CoroutineScope(Dispatchers.Main + job)
+
+    private var amount: Double = 0.0
 
     private val getCurrencyQuotesErrorHandler = CoroutineExceptionHandler { context, throwable ->
         handleCoroutineException(_getCurrencyQuotesError, throwable)
@@ -42,10 +48,22 @@ class MainViewModel(
             val quotes = async { interactor.getQuotes() }
             val data = awaitAll(currencies, quotes)
             _currencyList.value = data.first() as List<Currency>
+            _quotes.value = data.last() as List<Quote>
             _showProgress.value = false
-
-            println("MyLogTag ${data[1] as List<Quote>}")
         }
+    }
+
+    fun onCurrencySelected(position: Int) {
+        _currencyList.value?.let {
+            val currency = it[position]
+            val quotes = _quotes.value!!
+            _currentQuotes.value = quotes
+                .map { it.copy(amount = amount) }
+        }
+    }
+
+    fun onAmountEntered(string: String?) {
+        amount = string?.toDouble() ?: 0.0
     }
 
     private fun handleCoroutineException(
